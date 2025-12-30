@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Project, User } from '../types';
 import ChatInput from './ChatInput';
@@ -17,11 +16,11 @@ const ProjectPage: React.FC<ProjectPageProps> = ({ project, onVoiceToggle, onSen
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [project.messages]);
 
-  const formatMessage = (content: string) => {
+  const formatMessage = (content: string, isTagged: boolean) => {
     const parts = content.split(/(@Rima)/gi);
     return parts.map((part, i) => 
       part.toLowerCase() === '@rima' 
-        ? <span key={i} className="font-black text-white bg-white/20 px-1.5 py-0.5 rounded-md shadow-[0_0_10px_rgba(255,255,255,0.1)] ring-1 ring-white/30">@Rima</span> 
+        ? <span key={i} className={`font-black ${isTagged ? 'text-zinc-500' : 'text-zinc-600'}`}>@Rima</span> 
         : part
     );
   };
@@ -48,7 +47,7 @@ const ProjectPage: React.FC<ProjectPageProps> = ({ project, onVoiceToggle, onSen
                   {!isSelf && (
                     <div className="w-8 h-8 shrink-0">
                       {showAvatar && (
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] shadow-lg transition-transform hover:scale-110 ${isRima ? 'bg-indigo-500 text-white ring-2 ring-indigo-400/40 shadow-indigo-500/50' : (msg.sender as User).avatarColor}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] shadow-lg transition-transform hover:scale-110 ${isRima ? 'bg-violet-600 text-white ring-2 ring-violet-400/40 shadow-violet-500/50' : (msg.sender as User).avatarColor}`}>
                           {isRima ? <Sparkle size={14} weight="fill" /> : (msg.sender as User).name[0]}
                         </div>
                       )}
@@ -58,26 +57,26 @@ const ProjectPage: React.FC<ProjectPageProps> = ({ project, onVoiceToggle, onSen
                   <div className={`flex flex-col max-w-[85%] ${isSelf ? 'items-end' : 'items-start'}`}>
                       {showAvatar && !isSelf && (
                          <div className="flex items-center gap-2 mb-1.5 px-1">
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${isRima ? 'text-indigo-400' : 'text-zinc-600'}`}>
-                                {isRima ? 'Rima ✨' : (msg.sender as User).name}
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${isRima ? 'text-violet-400' : 'text-zinc-600'}`}>
+                                {isRima ? 'Rima ˙✦' : (msg.sender as User).name}
                             </span>
-                            {isRima && <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.8)]" />}
+                            {isRima && <div className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.8)]" />}
                          </div>
                       )}
                       
                       <div className={`relative px-4 py-3 shadow-2xl transition-all ${
                         isRima 
-                          ? 'bg-[#1a1a2e]/90 backdrop-blur-xl border border-indigo-500/30 text-stone-100 rounded-[22px] rounded-bl-[4px] shadow-indigo-500/10' 
+                          ? 'bg-[#1a1a2e]/90 backdrop-blur-xl border border-violet-500/30 text-stone-100 rounded-[22px] rounded-bl-[4px] shadow-violet-500/10' 
                           : isSelf 
-                            ? `rounded-[22px] rounded-br-[4px] text-white ${hasTag ? 'bg-[#007AFF] ring-2 ring-white/40 shadow-blue-500/30' : 'bg-[#007AFF]'}`
+                            ? `rounded-[22px] rounded-br-[4px] text-white ${hasTag ? 'bg-[#1c1c30] border border-white/5' : 'bg-[#007AFF]'}`
                             : 'bg-[#262629] text-stone-200 rounded-[22px] rounded-bl-[4px]'
                       }`}>
-                          <div className={`text-[15px] leading-relaxed whitespace-pre-wrap ${isRima ? 'font-medium tracking-tight text-indigo-50' : ''}`}>
-                            {formatMessage(msg.content)}
+                          <div className={`text-[15px] leading-relaxed whitespace-pre-wrap ${isRima ? 'font-medium tracking-tight text-violet-50' : ''}`}>
+                            {formatMessage(msg.content, hasTag && isSelf)}
                           </div>
                           <div className={`flex items-center gap-1 mt-2 ${isSelf ? 'justify-end' : 'justify-start'}`}>
-                             <span className={`text-[9px] font-black uppercase tracking-tighter ${isSelf ? 'text-blue-200/60' : 'text-zinc-600'}`}>{msg.timestamp}</span>
-                             {isSelf && <Checks size={12} weight="bold" className="text-blue-300/80" />}
+                             <span className={`text-[9px] font-black uppercase tracking-tighter ${isSelf ? (hasTag ? 'text-zinc-500' : 'text-blue-200/60') : 'text-zinc-600'}`}>{msg.timestamp}</span>
+                             {isSelf && <Checks size={12} weight="bold" className={hasTag ? "text-zinc-500" : "text-blue-300/80"} />}
                           </div>
                       </div>
                   </div>

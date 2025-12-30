@@ -35,6 +35,26 @@ const App: React.FC = () => {
   const activeProject = view.projectId ? projects.find(p => p.id === view.projectId) : null;
   const activeChannel = activeProject && view.channelId ? activeProject.channels.find(s => s.id === view.channelId) : null;
 
+  // Clear unread indicator when visiting a channel
+  useEffect(() => {
+    if (view.type === 'channel' && view.projectId && view.channelId) {
+      setProjects(prev => prev.map(p => {
+        if (p.id === view.projectId) {
+          const hasUnread = p.channels.some(ch => ch.id === view.channelId && ch.unreadCount);
+          if (hasUnread) {
+            return {
+              ...p,
+              channels: p.channels.map(ch => 
+                ch.id === view.channelId ? { ...ch, unreadCount: undefined } : ch
+              )
+            };
+          }
+        }
+        return p;
+      }));
+    }
+  }, [view.type, view.projectId, view.channelId]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -112,16 +132,13 @@ const App: React.FC = () => {
           RIMA AGENT SYSTEM INSTRUCTION:
           You are Rima, the Conversational Intelligence layer. You turn messy chat into organized outcomes. 
           Your tone is calm, professional, and slightly futuristic. 
-          Focus on:
-          1. ZERO ORGANIZATION: Do the sorting for the user. Identify tasks, risks, and deadlines automatically.
-          2. CLEAR HEAD: Reduce mental clutter. Use bullet points for structured data.
-          3. EFFORTLESS ACCOUNTABILITY: Mention who is responsible for what based on the scenario documents.
           
-          Response Guidelines:
-          - If the user tags you (@Rima), be direct and helpful.
-          - If you are in a summary view, provide a high-level briefing.
-          - Use bullet points for lists.
-          - Keep it under 4 sentences unless providing a detailed list.
+          CRITICAL CONSTRAINTS:
+          1. ABSOLUTELY NO EMOJIS. No sparkles, no checkmarks, no icons.
+          2. HIGH-CONTRAST PROFESSIONALISM. Be direct and analytical.
+          3. ZERO ORGANIZATION: Do the sorting for the user. Identify tasks, risks, and deadlines automatically.
+          4. Use bullet points for structured data.
+          5. Keep it under 4 sentences unless providing a detailed list.
         `;
 
         const result = await ai.models.generateContent({
@@ -132,7 +149,7 @@ const App: React.FC = () => {
         const rimaMessage: Message = {
           id: `rima_${Date.now()}`,
           sender: 'Rima',
-          content: result.text || "Synchronizing with workspace memory...",
+          content: result.text || "Synchronizing with workspace memory.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
