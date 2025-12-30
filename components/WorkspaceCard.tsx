@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { Project } from '../types';
-import { Hash, CaretRight, Clock, Target, Info } from "@phosphor-icons/react";
+import { Project, ThemeColor } from '../types';
+import { Hash, CaretRight, Users, Clock, Target, Lightning } from "@phosphor-icons/react";
 
 interface WorkspaceCardProps {
   workspace: Project;
@@ -9,78 +8,80 @@ interface WorkspaceCardProps {
   onChannelClick: (channelId: string) => void;
 }
 
+const themeStyles: Record<ThemeColor, {
+  accent: string;
+  light: string;
+}> = {
+  teal: { accent: 'bg-teal-500', light: 'text-teal-400' },
+  emerald: { accent: 'bg-emerald-500', light: 'text-emerald-400' },
+  rust: { accent: 'bg-orange-600', light: 'text-orange-400' },
+  gold: { accent: 'bg-amber-500', light: 'text-amber-400' },
+  obsidian: { accent: 'bg-zinc-500', light: 'text-zinc-400' },
+  indigo: { accent: 'bg-indigo-500', light: 'text-indigo-400' },
+  rose: { accent: 'bg-rose-500', light: 'text-rose-400' },
+  sky: { accent: 'bg-sky-400', light: 'text-sky-300' },
+  violet: { accent: 'bg-violet-500', light: 'text-violet-400' },
+  slate: { accent: 'bg-slate-400', light: 'text-slate-300' },
+};
+
 const WorkspaceCard: React.FC<WorkspaceCardProps> = ({ workspace, onClick, onChannelClick }) => {
+  const styles = themeStyles[workspace.theme] || themeStyles.obsidian;
+
   return (
     <div 
-      className="group relative flex flex-col bg-[#141416] border border-white/5 rounded-[28px] overflow-hidden transition-all duration-300 hover:border-white/20 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)] cursor-pointer"
+      className="group relative flex flex-col bg-[#141416]/80 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden transition-all duration-300 hover:border-white/10 hover:translate-y-[-2px] hover:shadow-2xl shadow-black/40"
       onClick={onClick}
     >
+      <div className={`absolute top-0 left-0 right-0 h-[2px] ${styles.accent} opacity-50`} />
+
       <div className="p-6 space-y-4">
-        {/* Header with Category Badge */}
         <div className="flex justify-between items-start">
-          <div 
-            className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5"
-            style={{ 
-              backgroundColor: `${workspace.categoryColor}15`, 
-              color: workspace.categoryColor,
-              border: `1px solid ${workspace.categoryColor}30`
-            }}
-          >
-            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: workspace.categoryColor }} />
-            {workspace.category}
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold text-white tracking-tight">{workspace.title}</h3>
+            <p className="text-sm text-zinc-500 line-clamp-1 font-light">{workspace.description}</p>
           </div>
-          <div className="flex items-center gap-1.5 text-zinc-500 font-black text-[10px] tracking-widest uppercase">
-            <Clock size={14} weight="bold" />
-            {workspace.schedule}
+          <div className={`px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[8px] font-black uppercase tracking-[0.2em] ${styles.light}`}>
+            {workspace.profileId.replace('p_', '')}
           </div>
         </div>
 
-        {/* Title and Description */}
-        <div className="space-y-1.5">
-          <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-zinc-100 transition-colors">
-            {workspace.title}
-          </h3>
-          <p className="text-[13px] text-zinc-500 line-clamp-2 leading-relaxed font-normal">
-            {workspace.description}
-          </p>
-        </div>
-
-        {/* Tags */}
         <div className="flex flex-wrap gap-2 pt-1">
-          {workspace.tags.map((tag) => (
-            <span 
-              key={tag}
-              className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] font-bold text-zinc-400"
+          {workspace.channels.slice(0, 3).map((channel) => (
+            <button
+              key={channel.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                onChannelClick(channel.id);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group/channel"
             >
-              {tag}
-            </span>
+              <Hash size={12} className="text-zinc-600 group-hover/channel:text-zinc-400" />
+              <span className="text-xs font-medium text-zinc-300">{channel.title}</span>
+            </button>
           ))}
-        </div>
-
-        {/* Progress Section */}
-        <div className="pt-4 space-y-3">
-          <div className="flex justify-between items-end">
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Current Progress</span>
-              <span className="text-sm font-bold text-white">{workspace.progress}%</span>
+          {workspace.channels.length > 3 && (
+            <div className="flex items-center px-2 py-1.5 text-[10px] text-zinc-600 font-bold uppercase">
+              +{workspace.channels.length - 3}
             </div>
-            <span className="text-[10px] text-zinc-500 font-medium italic mb-1">{workspace.progressExplanation}</span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
+          <div className="flex items-center gap-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">
+            <Clock size={16} />
+            {workspace.deadline || 'Ongoing'}
           </div>
-          <div className="w-full h-[6px] bg-white/5 rounded-full overflow-hidden">
-            <div 
-              className="h-full transition-all duration-1000 ease-out" 
-              style={{ 
-                width: `${workspace.progress}%`,
-                backgroundColor: workspace.categoryColor
-              }} 
-            />
+          
+          <div className="flex items-center gap-3">
+             <div className="flex flex-col items-end">
+                <div className="w-20 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className={`h-full ${styles.accent}`} style={{ width: `${workspace.progress || 0}%` }} />
+                </div>
+                <span className="text-[9px] text-zinc-600 font-black uppercase tracking-widest mt-1.5">{workspace.progress}%</span>
+             </div>
+             <CaretRight size={16} className="text-zinc-800 group-hover:text-zinc-400" />
           </div>
         </div>
-      </div>
-
-      {/* Hover Overlay Arrow */}
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-        <CaretRight size={20} className="text-white" weight="bold" />
       </div>
     </div>
   );

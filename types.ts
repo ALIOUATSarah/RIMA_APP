@@ -1,5 +1,4 @@
-
-export type ThemeColor = string;
+export type ThemeColor = 'gold' | 'rust' | 'obsidian' | 'teal' | 'emerald' | 'indigo' | 'rose' | 'sky' | 'violet' | 'slate';
 
 export interface User {
   id: string;
@@ -29,12 +28,7 @@ export interface Project {
   id: string;
   title: string;
   description: string;
-  category: 'WORK' | 'LIFE' | 'HEALTH' | 'PROJECT';
-  categoryColor: string;
-  schedule: string;
-  tags: string[];
-  progress: number;
-  progressExplanation: string;
+  theme: ThemeColor;
   channels: Channel[];
   members: User[];
   messages: Message[]; 
@@ -42,6 +36,7 @@ export interface Project {
   budget?: string;
   deadline?: string;
   phase?: string;
+  progress?: number;
   lastActivity?: string;
 }
 

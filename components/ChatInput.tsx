@@ -5,10 +5,9 @@ interface ChatInputProps {
   onVoiceToggle: () => void;
   onSendMessage: (content: string) => void;
   placeholder?: string;
-  enableTagging?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onVoiceToggle, onSendMessage, placeholder = "Ask Rima...", enableTagging }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onVoiceToggle, onSendMessage, placeholder = "Ask Rima..." }) => {
   const [inputValue, setInputValue] = useState('');
   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,13 +17,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onVoiceToggle, onSendMessage, pla
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInputValue(val);
-    if (enableTagging) {
-      const lastWord = val.split(' ').pop();
-      if (lastWord?.startsWith('@')) {
-        setShowTagSuggestions(true);
-      } else {
-        setShowTagSuggestions(false);
-      }
+    
+    // Check for tagging trigger
+    const words = val.split(' ');
+    const lastWord = words[words.length - 1];
+    if (lastWord?.startsWith('@')) {
+      setShowTagSuggestions(true);
+    } else {
+      setShowTagSuggestions(false);
     }
   };
 

@@ -8,10 +8,7 @@ interface NewWorkspacePageProps {
 
 const NewWorkspacePage: React.FC<NewWorkspacePageProps> = ({ onCreate }) => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [theme, setTheme] = useState<ThemeColor>('teal');
-  const [priority, setPriority] = useState('Medium');
-  const [visibility, setVisibility] = useState('Private');
 
   const themes: {id: ThemeColor, color: string}[] = [
     { id: 'teal', color: 'bg-teal-500' },
@@ -42,33 +39,6 @@ const NewWorkspacePage: React.FC<NewWorkspacePageProps> = ({ onCreate }) => {
             placeholder="e.g. Dubai Marina Project"
             className="w-full bg-[#141416] border border-white/5 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-zinc-800"
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">Priority Level</label>
-                <select 
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="w-full bg-[#141416] border border-white/5 rounded-2xl px-4 py-4 text-white focus:outline-none appearance-none cursor-pointer"
-                >
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                </select>
-            </div>
-            <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">Visibility</label>
-                <select 
-                    value={visibility}
-                    onChange={(e) => setVisibility(e.target.value)}
-                    className="w-full bg-[#141416] border border-white/5 rounded-2xl px-4 py-4 text-white focus:outline-none appearance-none cursor-pointer"
-                >
-                    <option>Private</option>
-                    <option>Team Shared</option>
-                    <option>Public</option>
-                </select>
-            </div>
         </div>
 
         <div className="space-y-4">
